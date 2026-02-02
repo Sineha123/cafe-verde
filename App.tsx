@@ -394,8 +394,8 @@ const ChefExcellence: React.FC = () => {
           <motion.div className="relative order-2 lg:order-1">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] shadow-2xl group">
               <img 
-                src="https://images.unsplash.com/photo-1583394293214-28ded15ee548?auto=format&fit=crop&q=80&w=1200" 
-                alt="Our Executive Chef Alessandro Verde" 
+                src="https://images.unsplash.com/photo-1595273670150-db0a3d39074f?auto=format&fit=crop&q=80&w=1200" 
+                alt="Executive Chef portrait" 
                 className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -723,23 +723,23 @@ const App: React.FC = () => {
                 <motion.div 
                   key={item.id}
                   whileHover={{ y: -20, scale: 1.02 }}
-                  className="bg-white p-12 rounded-[4rem] shadow-sm hover:shadow-2xl transition-all group flex flex-col border border-transparent hover:border-gray-100"
+                  className="bg-white p-14 rounded-[4.5rem] shadow-sm hover:shadow-2xl transition-all group flex flex-col border border-transparent hover:border-gray-100"
                 >
-                  <div className="relative h-96 rounded-[3.5rem] overflow-hidden mb-12">
+                  <div className="relative h-[450px] rounded-[4rem] overflow-hidden mb-12">
                     <img src={item.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={item.title} />
-                    <div className="absolute top-6 left-6">
-                      <span className="bg-[#008A45] text-white px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest shadow-xl">{item.recommendation}</span>
+                    <div className="absolute top-8 left-8">
+                      <span className="bg-[#008A45] text-white px-6 py-3 rounded-full text-[12px] font-bold uppercase tracking-widest shadow-xl">{item.recommendation}</span>
                     </div>
                   </div>
-                  <h3 className="text-4xl font-serif font-bold mb-4 tracking-tight">{item.title}</h3>
-                  <div className="flex justify-between items-center mb-8 pb-8 border-b border-gray-100">
-                    <p className="text-3xl text-[#FF6B00] font-bold font-serif">{item.price}</p>
-                    <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-400 bg-gray-50 px-5 py-2 rounded-full">{item.category}</span>
+                  <h3 className="text-5xl font-serif font-bold mb-6 tracking-tight">{item.title}</h3>
+                  <div className="flex justify-between items-center mb-10 pb-10 border-b border-gray-100">
+                    <p className="text-4xl text-[#FF6B00] font-bold font-serif">{item.price}</p>
+                    <span className="text-[12px] font-bold uppercase tracking-[0.4em] text-gray-400 bg-gray-50 px-6 py-3 rounded-full">{item.category}</span>
                   </div>
-                  <p className="text-gray-400 text-base leading-relaxed mb-12 flex-1">{item.description}</p>
+                  <p className="text-gray-400 text-lg leading-relaxed mb-14 flex-1">{item.description}</p>
                   <button 
                     onClick={() => addToCart(item)}
-                    className="w-full py-7 rounded-2xl bg-[#1a1a1a] text-white text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-[#008A45] transition-all shadow-xl active:scale-95"
+                    className="w-full py-8 rounded-[2.5rem] bg-[#1a1a1a] text-white text-[12px] font-bold uppercase tracking-[0.5em] hover:bg-[#008A45] transition-all shadow-xl active:scale-95"
                   >
                     Add to Feast
                   </button>
