@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from 'framer-motion';
 import { 
@@ -53,13 +52,21 @@ const fadeInUp: Variants = {
 // --- COMPONENTS ---
 
 const Logo: React.FC<{ className?: string }> = ({ className }) => (
-  <div className={`relative flex items-center justify-center bg-[#008A45] rounded-full border-4 border-[#FF6B00] overflow-hidden ${className}`}>
-    <div className="flex flex-col items-center justify-center p-2 text-white text-center">
-      <div className="flex items-center justify-center mb-0.5">
-        <UtensilsCrossed size={18} strokeWidth={2.5} />
+  <div className={`relative flex flex-col items-center justify-center bg-[#008A45] aspect-[2/3] rounded-full border-[3px] border-[#FF6B00] shadow-md ${className}`}>
+    <div className="flex flex-col items-center justify-center p-1 text-white text-center">
+      <div className="flex flex-col items-center">
+        {/* Fork and Plate Iconography */}
+        <div className="relative mb-0.5">
+           <div className="w-6 h-6 border-2 border-white/80 rounded-full flex items-center justify-center">
+              <div className="w-1 h-4 bg-white/80 rounded-full"></div>
+           </div>
+           <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-white/80 rounded-full"></div>
+        </div>
+        <div className="w-6 h-px bg-white/40 mb-1"></div>
+        <div className="font-serif font-bold text-[7px] tracking-tight leading-tight uppercase scale-90">
+          Cafe<br/>Verde
+        </div>
       </div>
-      <div className="w-8 h-px bg-white/40 mb-1"></div>
-      <div className="font-serif font-bold text-[8px] tracking-tight leading-none uppercase">Cafe<br/>Verde</div>
     </div>
   </div>
 );
@@ -90,7 +97,7 @@ const CustomCursor: React.FC<{ label: string | null }> = ({ label }) => {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              className="text-[4px] font-bold text-black uppercase tracking-tighter text-center"
+              className="text-[4px] font-bold text-black uppercase tracking-tighter text-center px-1"
             >
               {label}
             </motion.span>
@@ -355,7 +362,7 @@ const Navbar: React.FC<{ cartCount: number; onOpenCart: () => void; onOpenReserv
           onClick={() => scrollTo('home')}
           className="flex items-center space-x-3 cursor-pointer group"
         >
-          <Logo className="w-12 h-12 shadow-lg group-hover:rotate-6 transition-transform" />
+          <Logo className="w-10 shadow-lg group-hover:rotate-6 transition-transform" />
           <div className="flex flex-col">
             <span className="text-xl font-serif font-bold tracking-tight text-[#008A45] leading-none">CAFE VERDE</span>
             <span className="text-[8px] tracking-[0.4em] font-sans text-gray-400 font-bold uppercase">Fine Gastronomy</span>
@@ -449,50 +456,52 @@ const SectionHeader: React.FC<{ sub: string; title: string; center?: boolean }> 
 );
 
 const InstagramCarousel: React.FC = () => {
-  const posts = [...SOCIAL_POSTS, ...SOCIAL_POSTS]; // Double for seamless loop
+  // Triple the posts to ensure a very long seamless scroll
+  const posts = [...SOCIAL_POSTS, ...SOCIAL_POSTS, ...SOCIAL_POSTS];
   
   return (
-    <section className="py-24 bg-white overflow-hidden relative">
-      <div className="absolute top-0 left-0 w-40 h-full bg-gradient-to-r from-white to-transparent z-10"></div>
-      <div className="absolute top-0 right-0 w-40 h-full bg-gradient-to-l from-white to-transparent z-10"></div>
+    <section className="py-32 bg-white overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
       
-      <div className="mb-16 container mx-auto px-6 flex items-end justify-between">
+      <div className="mb-20 container mx-auto px-6 flex flex-col md:flex-row items-center md:items-end justify-between gap-8">
         <div>
-          <span className="text-[#008A45] font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">@cafeverde.hyd</span>
-          <h2 className="text-4xl font-serif font-bold tracking-tighter">Live Experiences.</h2>
+          <span className="text-[#008A45] font-bold text-[10px] uppercase tracking-[0.5em] mb-4 block">Social Proof</span>
+          <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tighter leading-none">Vibrant <span className="text-[#008A45] italic">Moments.</span></h2>
         </div>
-        <a href="https://www.instagram.com/cafeverde.hyd/" target="_blank" className="flex items-center space-x-3 text-xs font-bold uppercase tracking-widest text-[#FF6B00] hover:translate-x-2 transition-transform">
-          <span>Follow Us</span>
-          <ArrowRight size={16} />
+        <a href="https://www.instagram.com/cafeverde.hyd/" target="_blank" className="flex items-center space-x-3 text-[10px] font-bold uppercase tracking-[0.3em] text-[#FF6B00] hover:translate-x-3 transition-transform group">
+          <span>Follow @cafeverde.hyd</span>
+          <ArrowRight size={18} className="group-hover:scale-125 transition-transform" />
         </a>
       </div>
 
-      <motion.div 
-        animate={{ x: [0, -100 * SOCIAL_POSTS.length] }}
-        transition={{ 
-          duration: 30, 
-          repeat: Infinity, 
-          ease: "linear" 
-        }}
-        className="flex space-x-6 px-6"
-        style={{ width: `${SOCIAL_POSTS.length * 400}px` }}
-      >
-        {posts.map((post, i) => (
-          <div 
-            key={`${post.id}-${i}`} 
-            className="w-80 h-96 flex-shrink-0 relative group rounded-[2.5rem] overflow-hidden shadow-xl"
-          >
-            <img src={post.imageUrl} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Instagram" />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-8 text-center">
-              <div className="text-white">
-                <Instagram size={32} className="mx-auto mb-4" />
-                <p className="text-xs font-medium italic mb-6">"{post.caption}"</p>
-                <div className="text-[8px] uppercase tracking-[0.3em] font-bold text-[#FF6B00]">View on Instagram</div>
+      <div className="flex relative">
+        <motion.div 
+          animate={{ x: [0, -320 * SOCIAL_POSTS.length] }}
+          transition={{ 
+            duration: 40, 
+            repeat: Infinity, 
+            ease: "linear" 
+          }}
+          className="flex space-x-8 px-4"
+        >
+          {posts.map((post, i) => (
+            <div 
+              key={`${post.id}-${i}`} 
+              className="w-80 h-[450px] flex-shrink-0 relative group rounded-[3.5rem] overflow-hidden shadow-2xl bg-gray-50 border border-gray-100"
+            >
+              <img src={post.imageUrl} className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" alt="Instagram Post" />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center p-12 text-center backdrop-blur-sm">
+                <div className="text-white">
+                  <Instagram size={40} className="mx-auto mb-6 text-[#FF6B00]" />
+                  <p className="text-xs font-serif font-light italic mb-8 leading-relaxed">"{post.caption}"</p>
+                  <div className="text-[9px] uppercase tracking-[0.4em] font-bold border-b border-white/30 pb-2 inline-block">View Post</div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 };
@@ -976,7 +985,7 @@ const App: React.FC = () => {
           <div className="container mx-auto px-6 py-24">
             <div className="flex flex-col md:flex-row justify-between items-center gap-16">
               <div className="flex items-center space-x-4">
-                <Logo className="w-14 h-14 shadow-xl" />
+                <Logo className="w-12 shadow-xl" />
                 <div className="flex flex-col">
                   <span className="text-2xl font-serif font-bold tracking-tight text-[#008A45]">CAFE VERDE</span>
                   <span className="text-[8px] tracking-[0.4em] font-sans text-gray-400 font-bold uppercase">Fine Gastronomy</span>
