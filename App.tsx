@@ -750,9 +750,7 @@ const App: React.FC = () => {
         </section>
 
         <ChefExcellence />
-
         <InstagramCarousel />
-
         <ContactUs />
 
         {/* FOOTER */}
@@ -780,18 +778,18 @@ const App: React.FC = () => {
               <div className="space-y-6">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900">Explore</h4>
                 <ul className="space-y-4 text-sm text-gray-400 font-medium uppercase tracking-widest">
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Our Story</li>
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Menu Collection</li>
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Private Events</li>
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Contact</li>
+                  <li onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Our Story</li>
+                  <li onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Menu Collection</li>
+                  <li onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Private Events</li>
+                  <li onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Contact</li>
                 </ul>
               </div>
 
               <div className="space-y-6">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900">Experience</h4>
                 <ul className="space-y-4 text-sm text-gray-400 font-medium uppercase tracking-widest">
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Book a Table</li>
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Order Online</li>
+                  <li onClick={() => setIsReserveOpen(true)} className="hover:text-[#008A45] cursor-pointer transition-colors">Book a Table</li>
+                  <li onClick={() => setIsCartOpen(true)} className="hover:text-[#008A45] cursor-pointer transition-colors">Order Online</li>
                   <li className="hover:text-[#008A45] cursor-pointer transition-colors">Gift Vouchers</li>
                 </ul>
               </div>

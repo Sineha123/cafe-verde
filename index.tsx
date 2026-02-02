@@ -5,7 +5,7 @@ import App from './App';
 const container = document.getElementById('root');
 
 if (!container) {
-  throw new Error("Target container 'root' not found in the DOM.");
+  throw new Error("Target container 'root' not found.");
 }
 
 const root = createRoot(container);
