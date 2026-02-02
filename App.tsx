@@ -52,18 +52,22 @@ const fadeInUp: Variants = {
 // --- COMPONENTS ---
 
 const Logo: React.FC<{ className?: string }> = ({ className }) => (
-  <div className={`relative flex flex-col items-center justify-center bg-[#008A45] aspect-[2/3] rounded-full border-[3px] border-[#FF6B00] shadow-md ${className}`}>
-    <div className="flex flex-col items-center justify-center p-1 text-white text-center">
-      <div className="flex flex-col items-center">
-        {/* Fork and Plate Iconography */}
-        <div className="relative mb-0.5">
-           <div className="w-6 h-6 border-2 border-white/80 rounded-full flex items-center justify-center">
-              <div className="w-1 h-4 bg-white/80 rounded-full"></div>
+  <div className={`relative flex flex-col items-center justify-center bg-[#008A45] aspect-[3/4] rounded-full border-[4px] border-[#FF6B00] shadow-lg ${className}`}>
+    <div className="flex flex-col items-center justify-center p-1.5 text-white text-center h-full">
+      <div className="flex flex-col items-center flex-1 justify-center pt-1">
+        {/* Artistic Iconography matching brand image */}
+        <div className="relative mb-1">
+           <div className="w-8 h-8 border-[1.5px] border-white/80 rounded-full flex items-center justify-center">
+              <div className="flex space-x-0.5">
+                <div className="w-0.5 h-3 bg-white/80 rounded-full"></div>
+                <div className="w-0.5 h-4 bg-white/80 rounded-full scale-y-110"></div>
+                <div className="w-0.5 h-3 bg-white/80 rounded-full"></div>
+              </div>
            </div>
-           <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-white/80 rounded-full"></div>
+           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1.5 border-b-2 border-white/60 rounded-full"></div>
         </div>
-        <div className="w-6 h-px bg-white/40 mb-1"></div>
-        <div className="font-serif font-bold text-[7px] tracking-tight leading-tight uppercase scale-90">
+        <div className="w-8 h-px bg-white/30 my-1"></div>
+        <div className="font-serif font-bold text-[8px] tracking-tight leading-none uppercase">
           Cafe<br/>Verde
         </div>
       </div>
@@ -360,9 +364,9 @@ const Navbar: React.FC<{ cartCount: number; onOpenCart: () => void; onOpenReserv
       <div className="container mx-auto px-6 flex justify-between items-center">
         <motion.div 
           onClick={() => scrollTo('home')}
-          className="flex items-center space-x-3 cursor-pointer group"
+          className="flex items-center space-x-4 cursor-pointer group"
         >
-          <Logo className="w-10 shadow-lg group-hover:rotate-6 transition-transform" />
+          <Logo className="w-12 shadow-xl group-hover:rotate-6 transition-transform" />
           <div className="flex flex-col">
             <span className="text-xl font-serif font-bold tracking-tight text-[#008A45] leading-none">CAFE VERDE</span>
             <span className="text-[8px] tracking-[0.4em] font-sans text-gray-400 font-bold uppercase">Fine Gastronomy</span>
@@ -456,8 +460,10 @@ const SectionHeader: React.FC<{ sub: string; title: string; center?: boolean }> 
 );
 
 const InstagramCarousel: React.FC = () => {
-  // Triple the posts to ensure a very long seamless scroll
+  // Use a triple sequence to ensure truly infinite appearance
   const posts = [...SOCIAL_POSTS, ...SOCIAL_POSTS, ...SOCIAL_POSTS];
+  const itemWidth = 350; // Approximated width including gap
+  const totalWidth = itemWidth * SOCIAL_POSTS.length;
   
   return (
     <section className="py-32 bg-white overflow-hidden relative">
@@ -466,18 +472,18 @@ const InstagramCarousel: React.FC = () => {
       
       <div className="mb-20 container mx-auto px-6 flex flex-col md:flex-row items-center md:items-end justify-between gap-8">
         <div>
-          <span className="text-[#008A45] font-bold text-[10px] uppercase tracking-[0.5em] mb-4 block">Social Proof</span>
-          <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tighter leading-none">Vibrant <span className="text-[#008A45] italic">Moments.</span></h2>
+          <span className="text-[#008A45] font-bold text-[10px] uppercase tracking-[0.5em] mb-4 block">Instagram Story</span>
+          <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tighter leading-none">Shared <span className="text-[#008A45] italic">Moments.</span></h2>
         </div>
-        <a href="https://www.instagram.com/cafeverde.hyd/" target="_blank" className="flex items-center space-x-3 text-[10px] font-bold uppercase tracking-[0.3em] text-[#FF6B00] hover:translate-x-3 transition-transform group">
-          <span>Follow @cafeverde.hyd</span>
+        <a href="https://www.instagram.com/cafeverde.hyd/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 text-[10px] font-bold uppercase tracking-[0.3em] text-[#FF6B00] hover:translate-x-3 transition-transform group">
+          <span>@cafeverde.hyd</span>
           <ArrowRight size={18} className="group-hover:scale-125 transition-transform" />
         </a>
       </div>
 
-      <div className="flex relative">
+      <div className="flex relative items-center">
         <motion.div 
-          animate={{ x: [0, -320 * SOCIAL_POSTS.length] }}
+          animate={{ x: [0, -totalWidth] }}
           transition={{ 
             duration: 40, 
             repeat: Infinity, 
