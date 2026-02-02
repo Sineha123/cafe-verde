@@ -88,7 +88,7 @@ export const MENU_ITEMS: MenuItem[] = [
     price: 'PKR 2,850',
     priceNum: 2850,
     recommendation: 'Royal Taste',
-    image: 'https://images.unsplash.com/photo-1545240101-7004f260401d?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&q=80&w=1000',
     description: 'Slow-cooked mutton pieces in a traditional clay pot with a rich, aromatic blend of whole spices and cream.'
   }
 ];
