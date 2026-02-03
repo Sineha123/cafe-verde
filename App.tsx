@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { 
   Instagram, 
   MapPin, 
   Phone, 
-  ChevronRight, 
-  ArrowRight, 
   Clock, 
   X,
   ShoppingBag,
@@ -18,18 +16,36 @@ import {
   Award,
   Flame,
   UtensilsCrossed,
-  Calendar,
-  Users,
   Menu,
   Facebook,
-  Twitter
+  Twitter,
+  Star,
+  Quote
 } from 'lucide-react';
-import { MENU_ITEMS, GALLERY_IMAGES, SOCIAL_POSTS, MENU_CATEGORIES } from './constants';
+import { MENU_ITEMS, SOCIAL_POSTS, REVIEWS } from './constants';
 import { MenuItem, CartItem } from './types';
 
 // --- ANIMATION VARIANTS ---
+const revealLeft: Variants = {
+  hidden: { opacity: 0, x: -120 },
+  visible: { 
+    opacity: 1, 
+    x: 0, 
+    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
+const revealRight: Variants = {
+  hidden: { opacity: 0, x: 120 },
+  visible: { 
+    opacity: 1, 
+    x: 0, 
+    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
 const sectionReveal: Variants = {
-  hidden: { opacity: 0, y: 80 },
+  hidden: { opacity: 0, y: 50 },
   visible: { 
     opacity: 1, 
     y: 0, 
@@ -37,11 +53,11 @@ const sectionReveal: Variants = {
   }
 };
 
-const staggerChildren: Variants = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: { 
     opacity: 1, 
-    transition: { staggerChildren: 0.15 } 
+    transition: { staggerChildren: 0.2 } 
   }
 };
 
@@ -53,63 +69,26 @@ const fadeInUp: Variants = {
 // --- COMPONENTS ---
 
 const Logo: React.FC<{ className?: string }> = ({ className }) => (
-  <div className={`relative flex flex-col items-center justify-center bg-[#008A45] aspect-[3/4] rounded-full border-[4px] border-[#FF6B00] shadow-xl ${className}`}>
+  <div className={`relative flex flex-col items-center justify-center bg-[#008A45] aspect-[3/4] rounded-full border-[3px] border-[#FF6B00] shadow-xl ${className}`}>
     <div className="flex flex-col items-center justify-center p-1 text-white text-center h-full">
       <div className="flex flex-col items-center flex-1 justify-center">
-        <div className="relative mb-1">
-           <div className="w-8 h-8 border-[1.5px] border-white/80 rounded-full flex items-center justify-center">
+        <div className="relative mb-0.5">
+           <div className="w-6 h-6 border-[1.5px] border-white/80 rounded-full flex items-center justify-center">
               <div className="flex space-x-0.5">
-                <div className="w-0.5 h-3 bg-white/80 rounded-full"></div>
-                <div className="w-0.5 h-4 bg-white/80 rounded-full scale-y-110"></div>
-                <div className="w-0.5 h-3 bg-white/80 rounded-full"></div>
+                <div className="w-0.5 h-2 bg-white/80 rounded-full"></div>
+                <div className="w-0.5 h-3 bg-white/80 rounded-full scale-y-110"></div>
+                <div className="w-0.5 h-2 bg-white/80 rounded-full"></div>
               </div>
            </div>
         </div>
-        <div className="w-8 h-px bg-white/30 my-1"></div>
-        <div className="font-serif font-bold text-[8px] tracking-tight leading-none uppercase">
+        <div className="w-6 h-px bg-white/30 my-0.5"></div>
+        <div className="font-serif font-bold text-[6px] tracking-tight leading-none uppercase">
           Cafe<br/>Verde
         </div>
       </div>
     </div>
   </div>
 );
-
-const CustomCursor: React.FC<{ label: string | null }> = ({ label }) => {
-  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
-
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
-
-  return (
-    <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference hidden md:flex"
-      animate={{ 
-        x: mousePos.x - 16, 
-        y: mousePos.y - 16,
-        scale: label ? 6 : 1 
-      }}
-      transition={{ type: 'spring', damping: 25, stiffness: 250, mass: 0.5 }}
-    >
-      <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
-        <AnimatePresence>
-          {label && (
-            <motion.span 
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="text-[4px] font-bold text-black uppercase tracking-tighter text-center px-1"
-            >
-              {label}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
-  );
-};
 
 const ReservationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
@@ -312,42 +291,42 @@ const Navbar: React.FC<{ cartCount: number; onOpenCart: () => void; onOpenReserv
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${isScrolled ? 'py-3 glass-nav shadow-lg' : 'py-8 bg-transparent'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
         <div className="flex items-center space-x-4 cursor-pointer group">
-          <Logo className="w-11 group-hover:rotate-6 transition-transform" />
+          <Logo className="w-10 group-hover:rotate-6 transition-transform" />
           <div className="flex flex-col">
-            <span className="text-xl font-serif font-bold tracking-tight text-[#008A45] leading-none">CAFE VERDE</span>
-            <span className="text-[8px] tracking-[0.4em] font-sans text-gray-400 font-bold uppercase">Contemporary Fine Dining</span>
+            <span className="text-lg font-serif font-bold tracking-tight text-[#008A45] leading-none">CAFE VERDE</span>
+            <span className="text-[7px] tracking-[0.4em] font-sans text-gray-400 font-bold uppercase">Contemporary Fine Dining</span>
           </div>
         </div>
         
-        <div className="hidden lg:flex items-center space-x-12">
-          {['home', 'story', 'menu', 'chef', 'contact'].map(id => (
+        <div className="hidden lg:flex items-center space-x-10">
+          {['home', 'story', 'menu', 'chef', 'reviews', 'contact'].map(id => (
             <button 
               key={id} 
               onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 hover:text-gray-900 transition-colors"
+              className="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-500 hover:text-[#008A45] transition-all"
             >
               {id}
             </button>
           ))}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-6">
             <button onClick={onOpenCart} className="relative p-2 text-[#008A45] group">
-              <ShoppingBag size={20} className="group-hover:scale-110 transition-transform" />
+              <ShoppingBag size={18} className="group-hover:scale-110 transition-transform" />
               {cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-[#FF6B00] text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-lg">
                   {cartCount}
                 </span>
               )}
             </button>
-            <button onClick={onOpenReserve} className="bg-[#008A45] text-white px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">Book Table</button>
+            <button onClick={onOpenReserve} className="bg-[#008A45] text-white px-6 py-2.5 rounded-xl text-[9px] font-bold uppercase tracking-widest shadow-xl shadow-emerald-500/10 active:scale-95 transition-all">Book Table</button>
           </div>
         </div>
 
         <div className="lg:hidden flex items-center space-x-4">
            <button onClick={onOpenCart} className="relative p-2 text-[#008A45]">
-             <ShoppingBag size={24} />
+             <ShoppingBag size={22} />
              {cartCount > 0 && <span className="absolute top-1 right-1 bg-[#FF6B00] w-2 h-2 rounded-full shadow-lg"></span>}
            </button>
-           <button className="p-2 text-[#008A45]"><Menu size={24} /></button>
+           <button className="p-2 text-[#008A45]"><Menu size={22} /></button>
         </div>
       </div>
     </nav>
@@ -355,20 +334,20 @@ const Navbar: React.FC<{ cartCount: number; onOpenCart: () => void; onOpenReserv
 };
 
 const SectionHeader: React.FC<{ sub: string; title: string; center?: boolean }> = ({ sub, title, center }) => (
-  <div className={`mb-16 md:mb-20 ${center ? 'text-center' : ''}`}>
+  <motion.div 
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true }}
+    variants={fadeInUp}
+    className={`mb-12 md:mb-16 ${center ? 'text-center' : ''}`}
+  >
     <motion.span 
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      className="text-[#FF6B00] font-bold uppercase tracking-[0.5em] text-[10px] mb-4 block"
+      className="text-[#FF6B00] font-bold uppercase tracking-[0.5em] text-[9px] mb-3 block"
     >
       {sub}
     </motion.span>
     <motion.h2 
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="text-4xl md:text-7xl font-serif font-bold tracking-tighter leading-none"
+      className="text-3xl md:text-6xl font-serif font-bold tracking-tighter leading-none"
     >
       {title.split(' ').map((word, i) => (
         <span key={i} className={word.includes('.') ? 'text-[#008A45] italic' : ''}>
@@ -376,7 +355,7 @@ const SectionHeader: React.FC<{ sub: string; title: string; center?: boolean }> 
         </span>
       ))}
     </motion.h2>
-  </div>
+  </motion.div>
 );
 
 const ChefExcellence: React.FC = () => {
@@ -385,64 +364,138 @@ const ChefExcellence: React.FC = () => {
       id="chef" 
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      variants={sectionReveal}
-      className="py-32 bg-white relative overflow-hidden"
+      viewport={{ once: true, margin: "-150px" }}
+      className="py-24 bg-[#FCFCFC] relative overflow-hidden"
     >
       <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
-          <motion.div className="relative order-2 lg:order-1">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] shadow-2xl group">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <motion.div variants={revealLeft} className="relative order-2 lg:order-1">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[4rem] shadow-2xl group border-8 border-white">
               <img 
-                src="https://images.unsplash.com/photo-1577214224026-cc2c81577908?auto=format&fit=crop&q=80&w=1200" 
-                alt="Executive Chef portrait" 
-                className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
+                src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?auto=format&fit=crop&q=80&w=1200" 
+                alt="Executive Chef" 
+                className="w-full h-full object-cover transition-transform duration-[2.5s] group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-              <div className="absolute bottom-12 left-12">
-                <span className="text-[#FF6B00] font-bold text-[10px] uppercase tracking-widest block mb-2">Executive Chef</span>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              <div className="absolute bottom-10 left-10">
+                <span className="text-[#FF6B00] font-bold text-[9px] uppercase tracking-widest block mb-2">Executive Chef</span>
                 <h3 className="text-white text-3xl font-serif font-bold tracking-tight">Chef Alessandro Verde</h3>
               </div>
             </div>
             
-            <div className="absolute -right-8 -bottom-8 bg-white p-8 rounded-[2rem] shadow-2xl hidden md:block border border-gray-100">
-              <div className="flex items-center space-x-4 mb-4">
-                 <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-[#008A45]"><Award size={24} /></div>
+            <div className="absolute -right-6 -bottom-6 bg-white p-8 rounded-[2.5rem] shadow-2xl hidden md:block border border-gray-50">
+              <div className="flex items-center space-x-4 mb-3">
+                 <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-[#008A45]"><Award size={20} /></div>
                  <div>
-                   <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Accolades</p>
-                   <p className="text-sm font-bold">5+ Global Awards</p>
+                   <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Accolades</p>
+                   <p className="text-xs font-bold">5+ Global Awards</p>
                  </div>
               </div>
-              <div className="w-full h-px bg-gray-100 my-4"></div>
-              <p className="text-[10px] text-gray-400 leading-relaxed font-medium uppercase tracking-widest max-w-[150px]">
-                Dedicated to the purity of ingredients and the art of plating.
+              <p className="text-[9px] text-gray-400 leading-relaxed font-medium uppercase tracking-widest max-w-[140px]">
+                Dedicated to the purity of ingredients.
               </p>
             </div>
           </motion.div>
 
-          <div className="space-y-12 order-1 lg:order-2">
+          <motion.div variants={revealRight} className="space-y-10 order-1 lg:order-2">
             <SectionHeader sub="The Master" title="Culinary Excellence." />
             
-            <motion.p variants={fadeInUp} className="text-gray-500 text-xl leading-relaxed italic font-serif">
-              "We don't just cook; we choreograph textures and flavors to create an unforgettable architectural experience on your plate."
+            <motion.p variants={fadeInUp} className="text-gray-500 text-lg leading-relaxed italic font-serif border-l-2 border-[#008A45] pl-6">
+              "Cooking is not a task; it is an architectural performance. We don't just cook; we choreograph textures and flavors to create an unforgettable experience."
             </motion.p>
 
-            <motion.div variants={staggerChildren} className="grid grid-cols-2 gap-6">
+            <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-4">
               {[
-                { icon: <ChefHat size={32} />, title: "Precision", desc: "Meticulous attention to every garnish." },
-                { icon: <Flame size={32} />, title: "Passion", desc: "Techniques honed over decades." },
-                { icon: <Award size={32} />, title: "Quality", desc: "Only the finest local & imported goods." },
-                { icon: <UtensilsCrossed size={32} />, title: "Tradition", desc: "Heritage flavors, modern craft." }
+                { icon: <ChefHat size={24} />, title: "Precision", desc: "Meticulous detail." },
+                { icon: <Flame size={24} />, title: "Passion", desc: "Honest craft." },
+                { icon: <Award size={24} />, title: "Quality", desc: "Premium sourcing." },
+                { icon: <UtensilsCrossed size={24} />, title: "Heritage", desc: "Modern legacy." }
               ].map((item, i) => (
-                <motion.div key={i} variants={fadeInUp} className="p-6 border border-gray-100 rounded-3xl hover:border-[#008A45] transition-all bg-gray-50/50 group">
-                  <div className="text-[#008A45] mb-4 group-hover:scale-110 transition-transform">{item.icon}</div>
-                  <h4 className="text-base font-serif font-bold mb-2">{item.title}</h4>
-                  <p className="text-[10px] text-gray-400 leading-relaxed font-medium uppercase tracking-widest">{item.desc}</p>
+                <motion.div key={i} variants={fadeInUp} className="p-5 border border-gray-100 rounded-2xl hover:border-[#008A45] transition-all bg-white group shadow-sm">
+                  <div className="text-[#008A45] mb-3 group-hover:scale-110 transition-transform">{item.icon}</div>
+                  <h4 className="text-sm font-serif font-bold mb-1">{item.title}</h4>
+                  <p className="text-[9px] text-gray-400 leading-relaxed font-medium uppercase tracking-widest">{item.desc}</p>
                 </motion.div>
               ))}
             </motion.div>
-          </div>
+          </motion.div>
         </div>
+      </div>
+    </motion.section>
+  );
+};
+
+const ReviewsSection: React.FC = () => {
+  return (
+    <motion.section 
+      id="reviews" 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      className="py-24 bg-white relative"
+    >
+      <div className="container mx-auto px-6">
+        <SectionHeader sub="Testimonials" title="Epicurean Voices." center />
+        <motion.div variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
+          {REVIEWS.map((review, i) => (
+            <motion.div 
+              key={review.id}
+              variants={i % 2 === 0 ? revealLeft : revealRight}
+              whileHover={{ y: -10 }}
+              className="p-10 rounded-[3rem] bg-[#F9FAFB] border border-gray-100 relative group overflow-hidden"
+            >
+              <Quote className="absolute -top-4 -right-4 w-24 h-24 text-gray-200/50 group-hover:text-[#008A45]/10 transition-colors" />
+              <div className="flex space-x-1 mb-6">
+                {[...Array(review.rating)].map((_, i) => <Star key={i} size={14} className="fill-[#FF6B00] text-[#FF6B00]" />)}
+              </div>
+              <p className="text-gray-500 font-serif italic text-lg leading-relaxed mb-8">"{review.content}"</p>
+              <div>
+                <h4 className="font-bold text-gray-900">{review.name}</h4>
+                <p className="text-[9px] uppercase tracking-widest font-bold text-[#008A45]">{review.role}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </motion.section>
+  );
+};
+
+const InstagramCarousel: React.FC = () => {
+  const posts = [...SOCIAL_POSTS, ...SOCIAL_POSTS, ...SOCIAL_POSTS];
+  const totalWidth = 350 * SOCIAL_POSTS.length;
+  
+  return (
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={sectionReveal}
+      className="py-24 bg-white overflow-hidden relative border-y border-gray-50"
+    >
+      <div className="container mx-auto px-6 mb-16 text-center">
+        <SectionHeader sub="The Gallery" title="Social Pulse." center />
+      </div>
+
+      <div className="flex relative items-center">
+        <motion.div 
+          animate={{ x: [0, -totalWidth] }}
+          transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+          className="flex space-x-6 px-4"
+        >
+          {posts.map((post, i) => (
+            <div key={`${post.id}-${i}`} className="w-72 h-96 flex-shrink-0 relative group rounded-[3rem] overflow-hidden shadow-xl bg-gray-50 border border-gray-100">
+              <img src={post.imageUrl} className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" alt="Instagram Post" />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center p-8 text-center backdrop-blur-sm">
+                <div className="text-white">
+                  <Instagram size={30} className="mx-auto mb-4 text-[#FF6B00]" />
+                  <p className="text-xs font-serif italic mb-6">"{post.caption}"</p>
+                  <a href="https://www.instagram.com/cafeverde.hyd/" target="_blank" rel="noreferrer" className="text-[8px] uppercase tracking-[0.4em] font-bold border-b border-white/30 pb-2 inline-block">View Post</a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -470,22 +523,21 @@ const ContactUs: React.FC = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
-      variants={sectionReveal}
-      className="py-32 bg-[#F9FAFB] relative overflow-hidden"
+      className="py-24 bg-[#F9FAFB] relative overflow-hidden"
     >
       <div className="container mx-auto px-6">
         <SectionHeader sub="Get In Touch" title="Contact Verde." center />
 
-        <div className="grid lg:grid-cols-12 gap-16">
-          <motion.div variants={fadeInUp} className="lg:col-span-4 space-y-12">
-            <div className="space-y-10">
+        <div className="grid lg:grid-cols-12 gap-12">
+          <motion.div variants={revealLeft} className="lg:col-span-4 space-y-8">
+            <div className="space-y-8">
               {[
                 { icon: <MapPin />, title: "Location", content: "Autobhan Road, Hyderabad, Sindh" },
                 { icon: <Phone />, title: "Inquiries", content: "+92 311 1234567" },
                 { icon: <Clock />, title: "Operating Hours", content: "Daily: 12:00 PM — 01:00 AM" }
               ].map((item, idx) => (
                 <div key={idx} className="flex items-start space-x-6 group">
-                  <div className="w-14 h-14 rounded-2xl bg-white shadow-lg flex items-center justify-center text-[#008A45] group-hover:bg-[#008A45] group-hover:text-white transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-white shadow-md flex items-center justify-center text-[#008A45] group-hover:bg-[#008A45] group-hover:text-white transition-all">
                     {item.icon}
                   </div>
                   <div>
@@ -496,52 +548,48 @@ const ContactUs: React.FC = () => {
               ))}
             </div>
 
-            <div className="bg-[#008A45] p-10 rounded-[3rem] text-white space-y-6 shadow-2xl">
+            <div className="bg-[#008A45] p-10 rounded-[2.5rem] text-white space-y-4 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-3xl group-hover:bg-white/20 transition-all"></div>
               <h3 className="text-2xl font-serif font-bold">Plan an Event?</h3>
-              <p className="text-emerald-100 text-sm font-medium">We host exclusive private dinners and corporate gatherings for up to 50 guests.</p>
-              <button className="w-full bg-white text-[#008A45] py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-[#FF6B00] hover:text-white transition-all">
+              <p className="text-emerald-500/80 text-sm font-medium">We host exclusive private dinners for up to 50 guests.</p>
+              <button className="w-full bg-white text-[#008A45] py-3.5 rounded-xl font-bold uppercase tracking-widest text-[9px] hover:bg-[#FF6B00] hover:text-white transition-all">
                 Event Inquiry
               </button>
             </div>
           </motion.div>
 
           <motion.div 
-            variants={fadeInUp}
-            className="lg:col-span-8 bg-white p-10 md:p-16 rounded-[4rem] shadow-xl border border-gray-100"
+            variants={revealRight}
+            className="lg:col-span-8 bg-white p-10 md:p-14 rounded-[4rem] shadow-xl border border-gray-100"
           >
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 ml-4">Full Name</label>
-                  <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="John Doe" className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:border-[#008A45] focus:bg-white outline-none transition-all" />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 ml-4">Full Name</label>
+                  <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="John Doe" className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:border-[#008A45] focus:bg-white outline-none transition-all" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 ml-4">Email Address</label>
-                  <input required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" className="w-full px-8 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:border-[#008A45] focus:bg-white outline-none transition-all" />
+                <div className="space-y-1.5">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 ml-4">Email Address</label>
+                  <input required type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" className="w-full px-6 py-4 rounded-[1.5rem] bg-gray-50 border-2 border-transparent focus:border-[#008A45] focus:bg-white outline-none transition-all" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 ml-4">Your Inquiry</label>
-                <textarea required rows={5} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} placeholder="Tell us how we can curate your experience..." className="w-full px-8 py-6 rounded-[2.5rem] bg-gray-50 border-2 border-transparent focus:border-[#008A45] focus:bg-white outline-none transition-all resize-none"></textarea>
+              <div className="space-y-1.5">
+                <label className="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 ml-4">Your Inquiry</label>
+                <textarea required rows={4} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} placeholder="How can we curate your experience?" className="w-full px-6 py-5 rounded-[2rem] bg-gray-50 border-2 border-transparent focus:border-[#008A45] focus:bg-white outline-none transition-all resize-none"></textarea>
               </div>
               
               <button 
                 type="submit"
                 disabled={isSending}
-                className="w-full bg-[#1a1a1a] text-white py-6 rounded-[2.5rem] font-bold uppercase tracking-[0.3em] text-[10px] flex items-center justify-center space-x-4 hover:bg-[#FF6B00] transition-all relative overflow-hidden"
+                className="w-full bg-[#1a1a1a] text-white py-5 rounded-[2rem] font-bold uppercase tracking-[0.3em] text-[9px] flex items-center justify-center space-x-3 hover:bg-[#FF6B00] transition-all"
               >
-                <AnimatePresence mode="wait">
-                  {isSending ? (
-                    <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} key="loading"><Clock size={20} /></motion.div>
-                  ) : isSent ? (
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} key="sent" className="flex items-center space-x-3"><CheckCircle2 size={20} /><span>Message Received</span></motion.div>
-                  ) : (
-                    <motion.div key="default" className="flex items-center space-x-3">
-                      <span>Transmit Inquiry</span>
-                      <Send size={16} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {isSending ? (
+                  <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><Clock size={16} /></motion.div>
+                ) : isSent ? (
+                  <div className="flex items-center space-x-2"><CheckCircle2 size={16} /><span>Message Received</span></div>
+                ) : (
+                  <div className="flex items-center space-x-2"><span>Transmit Inquiry</span><Send size={14} /></div>
+                )}
               </button>
             </form>
           </motion.div>
@@ -551,43 +599,7 @@ const ContactUs: React.FC = () => {
   );
 };
 
-const InstagramCarousel: React.FC = () => {
-  const posts = [...SOCIAL_POSTS, ...SOCIAL_POSTS, ...SOCIAL_POSTS];
-  const itemWidth = 350; 
-  const totalWidth = itemWidth * SOCIAL_POSTS.length;
-  
-  return (
-    <section className="py-32 bg-white overflow-hidden relative border-y border-gray-50">
-      <div className="container mx-auto px-6 mb-20 text-center">
-        <SectionHeader sub="The Gallery" title="Social Story." center />
-      </div>
-
-      <div className="flex relative items-center">
-        <motion.div 
-          animate={{ x: [0, -totalWidth] }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="flex space-x-8 px-4"
-        >
-          {posts.map((post, i) => (
-            <div key={`${post.id}-${i}`} className="w-80 h-[500px] flex-shrink-0 relative group rounded-[4rem] overflow-hidden shadow-2xl bg-gray-50 border border-gray-100">
-              <img src={post.imageUrl} className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" alt="Instagram Post" />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center p-12 text-center backdrop-blur-md">
-                <div className="text-white">
-                  <Instagram size={40} className="mx-auto mb-6 text-[#FF6B00]" />
-                  <p className="text-sm font-serif italic mb-8">"{post.caption}"</p>
-                  <div className="text-[9px] uppercase tracking-[0.4em] font-bold border-b border-white/30 pb-2 inline-block">View on Instagram</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
 const App: React.FC = () => {
-  const [cursorLabel, setCursorLabel] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isReserveOpen, setIsReserveOpen] = useState(false);
@@ -600,8 +612,6 @@ const App: React.FC = () => {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
-    setCursorLabel('Added!');
-    setTimeout(() => setCursorLabel(null), 1000);
   };
 
   const updateQuantity = (id: number, delta: number) => {
@@ -622,7 +632,6 @@ const App: React.FC = () => {
 
   return (
     <div className="font-sans text-[#1a1a1a] bg-white min-h-screen">
-      <CustomCursor label={cursorLabel} />
       <Navbar cartCount={totalItems} onOpenCart={() => setIsCartOpen(true)} onOpenReserve={() => setIsReserveOpen(true)} />
       
       <OrderDrawer 
@@ -639,29 +648,29 @@ const App: React.FC = () => {
         {/* HERO SECTION */}
         <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#FBFBFB]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(0,138,69,0.03)_0%,_transparent_60%)]"></div>
-          <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center z-10 pt-20">
-            <motion.div initial="hidden" animate="visible" variants={staggerChildren}>
-              <motion.div variants={fadeInUp} className="flex items-center space-x-3 mb-10">
-                <span className="w-12 h-px bg-[#FF6B00]"></span>
-                <span className="text-[#FF6B00] font-sans font-bold tracking-[0.6em] uppercase text-[10px]">Artisan Gastronomy</span>
+          <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center z-10 pt-20">
+            <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
+              <motion.div variants={revealLeft} className="flex items-center space-x-3 mb-8">
+                <span className="w-10 h-px bg-[#FF6B00]"></span>
+                <span className="text-[#FF6B00] font-sans font-bold tracking-[0.5em] uppercase text-[9px]">Artisan Gastronomy</span>
               </motion.div>
-              <motion.h1 variants={fadeInUp} className="text-[12vw] lg:text-[7vw] font-serif font-bold leading-[0.85] mb-12 tracking-tighter">
+              <motion.h1 variants={revealLeft} className="text-[10vw] lg:text-[6vw] font-serif font-bold leading-[0.9] mb-10 tracking-tighter">
                 Architecture <br />
                 <span className="text-[#008A45] italic">of Flavor.</span>
               </motion.h1>
-              <motion.p variants={fadeInUp} className="text-gray-400 font-sans max-w-sm text-lg leading-relaxed mb-16 border-l-4 border-[#008A45] pl-8">
+              <motion.p variants={revealLeft} className="text-gray-400 font-sans max-w-sm text-base leading-relaxed mb-12 border-l-4 border-[#008A45] pl-6">
                 Where high-end aesthetics meet the heart of fine dining. Experience Hyderabad's most exclusive culinary landmark.
               </motion.p>
-              <motion.div variants={fadeInUp} className="flex flex-wrap gap-10">
+              <motion.div variants={revealLeft} className="flex flex-wrap gap-8">
                 <button 
                   onClick={() => setIsReserveOpen(true)}
-                  className="bg-[#008A45] text-white px-12 py-6 rounded-[2.5rem] font-bold uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-emerald-500/20 active:scale-95 transition-all"
+                  className="bg-[#008A45] text-white px-10 py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-[9px] shadow-2xl shadow-emerald-500/10 active:scale-95 transition-all"
                 >
                   Reserve Experience
                 </button>
                 <button 
                   onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="border-b-2 border-gray-900 py-4 font-bold uppercase tracking-[0.4em] text-[10px] hover:text-[#008A45] hover:border-[#008A45] transition-all"
+                  className="border-b-2 border-gray-900 py-3 font-bold uppercase tracking-[0.3em] text-[9px] hover:text-[#008A45] hover:border-[#008A45] transition-all"
                 >
                   Explore Menu
                 </button>
@@ -669,17 +678,17 @@ const App: React.FC = () => {
             </motion.div>
             
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+              variants={revealRight}
+              initial="hidden"
+              animate="visible"
               className="relative hidden lg:block"
             >
-              <div className="relative aspect-square max-w-[600px] mx-auto">
-                <div className="absolute inset-0 bg-[#008A45]/10 rounded-full blur-[100px] animate-pulse"></div>
+              <div className="relative aspect-square max-w-[550px] mx-auto">
+                <div className="absolute inset-0 bg-[#008A45]/5 rounded-full blur-[80px]"></div>
                 <img 
                   src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=1200" 
-                  className="w-full h-full object-cover rounded-full border-[20px] border-white shadow-2xl" 
-                  alt="Fine Dining Selection" 
+                  className="w-full h-full object-cover rounded-full border-[15px] border-white shadow-2xl" 
+                  alt="Fine Dining" 
                 />
               </div>
             </motion.div>
@@ -692,118 +701,154 @@ const App: React.FC = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          variants={sectionReveal}
-          className="py-32 bg-white"
+          className="py-24 bg-white"
         >
-          <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-24 items-center">
-            <div className="relative group overflow-hidden rounded-[4rem] h-[700px] shadow-2xl">
-              <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover transition-transform duration-[5s] group-hover:scale-110" alt="Cafe Verde Interior" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-              <div className="absolute bottom-16 left-16 text-white">
-                <h3 className="text-5xl font-serif italic mb-4">Space of Luxury.</h3>
-                <p className="text-[10px] uppercase tracking-[0.5em] opacity-60">Architectural Excellence</p>
+          <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div variants={revealLeft} className="relative group overflow-hidden rounded-[3rem] h-[600px] shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover transition-transform duration-[4s] group-hover:scale-105" alt="Interior" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+              <div className="absolute bottom-12 left-12 text-white">
+                <h3 className="text-4xl font-serif italic mb-2">Space of Luxury.</h3>
+                <p className="text-[9px] uppercase tracking-[0.5em] opacity-60 font-bold">The Visionary Core</p>
               </div>
-            </div>
-            <div className="space-y-12">
+            </motion.div>
+            <motion.div variants={revealRight} className="space-y-10">
               <SectionHeader sub="The Vision" title="Elevating Taste." />
-              <p className="text-gray-500 text-xl leading-relaxed italic font-serif">"Every dish is a brushstroke, every space a canvas. At Cafe Verde, we curate emotions, not just meals."</p>
-              <p className="text-sm text-gray-400 leading-relaxed font-medium uppercase tracking-widest border-t border-gray-100 pt-12">
-                Designed for the connoisseur, our space blends modern minimalism with heritage warmth to create Hyderabad's premier fine dining atmosphere.
-              </p>
-            </div>
+              <div className="space-y-6">
+                <p className="text-gray-500 text-xl leading-relaxed italic font-serif">"At Cafe Verde, we believe that dining is the highest form of performance art. Our mission is to bridge the gap between architectural precision and organic soul."</p>
+                <div className="h-px bg-gray-100 w-24"></div>
+                <p className="text-sm text-gray-400 leading-relaxed font-medium uppercase tracking-widest text-balance">
+                  Every element, from the hand-carved furniture to the micro-herbs on your plate, is a deliberate choice. We aim to redefine the culinary landscape of Hyderabad by honoring heritage flavors while embracing the avant-garde.
+                </p>
+                <p className="text-sm text-gray-400 leading-relaxed font-medium uppercase tracking-widest text-balance">
+                  Our space is more than a restaurant; it is a sanctuary for the connoisseur, where the rustle of linen and the clink of crystal compose a symphony of refinement. We invite you to lose yourself in an environment where excellence is the only standard.
+                </p>
+              </div>
+            </motion.div>
           </div>
         </motion.section>
 
         {/* MENU SECTION */}
-        <section id="menu" className="py-32 bg-[#F8F9FA]">
+        <section id="menu" className="py-24 bg-[#F8F9FA]">
           <div className="container mx-auto px-6">
             <SectionHeader sub="Selection" title="Our Menu." center />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-16">
-              {MENU_ITEMS.map((item) => (
+            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid md:grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+              {MENU_ITEMS.map((item, idx) => (
                 <motion.div 
                   key={item.id}
-                  whileHover={{ y: -20, scale: 1.02 }}
-                  className="bg-white p-14 rounded-[5rem] shadow-sm hover:shadow-2xl transition-all group flex flex-col border border-transparent hover:border-gray-100"
+                  variants={idx % 2 === 0 ? revealLeft : revealRight}
+                  whileHover={{ y: -10 }}
+                  className="bg-white p-10 rounded-[4rem] shadow-sm hover:shadow-xl transition-all group flex flex-col md:flex-row gap-8 border border-transparent hover:border-gray-50"
                 >
-                  <div className="relative h-[500px] rounded-[4rem] overflow-hidden mb-12">
+                  <div className="relative h-64 md:h-auto md:w-[40%] rounded-[2.5rem] overflow-hidden flex-shrink-0">
                     <img src={item.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={item.title} />
-                    <div className="absolute top-10 left-10">
-                      <span className="bg-[#008A45] text-white px-8 py-4 rounded-full text-[14px] font-bold uppercase tracking-widest shadow-xl">{item.recommendation}</span>
+                  </div>
+                  <div className="flex-1 flex flex-col py-2">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-3xl font-serif font-bold tracking-tight">{item.title}</h3>
+                      <span className="bg-[#008A45] text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-md">{item.recommendation}</span>
                     </div>
+                    <div className="flex items-center space-x-4 mb-4">
+                      <p className="text-2xl text-[#FF6B00] font-bold font-serif">{item.price}</p>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 bg-gray-50 px-4 py-1.5 rounded-full">{item.category}</span>
+                    </div>
+                    <p className="text-gray-400 text-base leading-relaxed mb-8 italic flex-1">{item.description}</p>
+                    <button 
+                      onClick={() => addToCart(item)}
+                      className="w-full py-4 rounded-[1.5rem] bg-[#1a1a1a] text-white text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-[#008A45] transition-all"
+                    >
+                      Add to Feast
+                    </button>
                   </div>
-                  <h3 className="text-5xl font-serif font-bold mb-6 tracking-tight">{item.title}</h3>
-                  <div className="flex justify-between items-center mb-10 pb-10 border-b border-gray-100">
-                    <p className="text-4xl text-[#FF6B00] font-bold font-serif">{item.price}</p>
-                    <span className="text-[14px] font-bold uppercase tracking-[0.4em] text-gray-400 bg-gray-50 px-8 py-3 rounded-full">{item.category}</span>
-                  </div>
-                  <p className="text-gray-400 text-xl leading-relaxed mb-14 flex-1 italic">{item.description}</p>
-                  <button 
-                    onClick={() => addToCart(item)}
-                    className="w-full py-10 rounded-[3rem] bg-[#1a1a1a] text-white text-[14px] font-bold uppercase tracking-[0.5em] hover:bg-[#008A45] transition-all shadow-xl active:scale-95"
-                  >
-                    Add to Feast
-                  </button>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
+            <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mt-16 text-center">
+              <button className="border-2 border-[#1a1a1a] px-12 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-[#1a1a1a] hover:text-white transition-all">
+                View Full Menu
+              </button>
+            </motion.div>
           </div>
         </section>
 
         <ChefExcellence />
+        <ReviewsSection />
         <InstagramCarousel />
         <ContactUs />
 
         {/* FOOTER */}
-        <footer className="py-24 bg-white border-t border-gray-100">
+        <motion.footer 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className="py-20 bg-[#002E17] text-white"
+        >
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-4 gap-16 mb-20">
-              <div className="col-span-2 space-y-8">
-                <div className="flex items-center space-x-4">
-                  <Logo className="w-10" />
+            <div className="grid md:grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
+              <div className="lg:col-span-1 space-y-6">
+                <div className="flex items-center space-x-3">
+                  <Logo className="w-10 border-white/20" />
                   <div className="flex flex-col">
-                    <span className="text-2xl font-serif font-bold tracking-tight text-[#008A45]">CAFE VERDE</span>
-                    <span className="text-[8px] tracking-[0.4em] font-sans text-gray-400 font-bold uppercase">Contemporary Fine Dining</span>
+                    <span className="text-xl font-serif font-bold tracking-tight text-white">CAFE VERDE</span>
+                    <span className="text-[7px] tracking-[0.4em] font-sans text-emerald-500 font-bold uppercase">Contemporary Fine Dining</span>
                   </div>
                 </div>
-                <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                <p className="text-emerald-500/60 text-sm leading-relaxed max-w-xs">
                   Redefining the fine dining landscape of Hyderabad with artistic gastronomy and architectural luxury.
                 </p>
-                <div className="flex space-x-6">
-                  <Instagram className="text-gray-300 hover:text-[#008A45] cursor-pointer transition-colors" size={20} />
-                  <Facebook className="text-gray-300 hover:text-[#008A45] cursor-pointer transition-colors" size={20} />
-                  <Twitter className="text-gray-300 hover:text-[#008A45] cursor-pointer transition-colors" size={20} />
+                <div className="flex space-x-5 pt-4">
+                  <a href="https://www.instagram.com/cafeverde.hyd/" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#FF6B00] hover:border-[#FF6B00] transition-all">
+                    <Instagram size={18} />
+                  </a>
+                  <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#008A45] hover:border-[#008A45] transition-all">
+                    <Facebook size={18} />
+                  </a>
+                  <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#008A45] hover:border-[#008A45] transition-all">
+                    <Twitter size={18} />
+                  </a>
                 </div>
               </div>
               
               <div className="space-y-6">
-                <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900">Explore</h4>
-                <ul className="space-y-4 text-sm text-gray-400 font-medium uppercase tracking-widest">
-                  <li onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Our Story</li>
-                  <li onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Menu Collection</li>
-                  <li onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Private Events</li>
-                  <li onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#008A45] cursor-pointer transition-colors">Contact</li>
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-500">Navigation</h4>
+                <ul className="space-y-3 text-[11px] text-white/50 font-bold uppercase tracking-widest">
+                  <li onClick={() => document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white cursor-pointer transition-colors">Return Home</li>
+                  <li onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white cursor-pointer transition-colors">The Vision</li>
+                  <li onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white cursor-pointer transition-colors">Curated Menu</li>
+                  <li onClick={() => document.getElementById('chef')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white cursor-pointer transition-colors">The Master</li>
                 </ul>
               </div>
 
               <div className="space-y-6">
-                <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-900">Experience</h4>
-                <ul className="space-y-4 text-sm text-gray-400 font-medium uppercase tracking-widest">
-                  <li onClick={() => setIsReserveOpen(true)} className="hover:text-[#008A45] cursor-pointer transition-colors">Book a Table</li>
-                  <li onClick={() => setIsCartOpen(true)} className="hover:text-[#008A45] cursor-pointer transition-colors">Order Online</li>
-                  <li className="hover:text-[#008A45] cursor-pointer transition-colors">Gift Vouchers</li>
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-500">Reservation</h4>
+                <ul className="space-y-3 text-[11px] text-white/50 font-bold uppercase tracking-widest">
+                  <li onClick={() => setIsReserveOpen(true)} className="hover:text-white cursor-pointer transition-colors">Book a Table</li>
+                  <li className="hover:text-white cursor-pointer transition-colors">Private Events</li>
+                  <li className="hover:text-white cursor-pointer transition-colors">Catering</li>
+                  <li className="hover:text-white cursor-pointer transition-colors">Gift Vouchers</li>
                 </ul>
+              </div>
+
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-500">Contact</h4>
+                <div className="space-y-3 text-[11px] text-white/50 font-bold uppercase tracking-widest">
+                   <p className="flex items-center space-x-3"><MapPin size={12} className="text-emerald-500" /> <span>Hyderabad, Pakistan</span></p>
+                   <p className="flex items-center space-x-3"><Phone size={12} className="text-emerald-500" /> <span>+92 311 1234567</span></p>
+                   <p className="flex items-center space-x-3"><Clock size={12} className="text-emerald-500" /> <span>12 PM - 1 AM Daily</span></p>
+                </div>
               </div>
             </div>
             
-            <div className="pt-12 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
-              <p className="text-[9px] uppercase tracking-[0.4em] text-gray-300 font-bold">© 2026 Cafe Verde Hyderabad. All rights curated.</p>
-              <div className="flex space-x-12">
-                <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gray-300 hover:text-black cursor-pointer transition-colors">Privacy Policy</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gray-300 hover:text-black cursor-pointer transition-colors">Terms of Taste</span>
+            <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+              <p className="text-[9px] uppercase tracking-[0.4em] text-white/20 font-bold">© 2026 Cafe Verde Hyderabad. Masterfully Curated.</p>
+              <div className="flex space-x-10">
+                <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-white/20 hover:text-white cursor-pointer transition-colors">Privacy</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-white/20 hover:text-white cursor-pointer transition-colors">Terms of Taste</span>
               </div>
             </div>
           </div>
-        </footer>
+        </motion.footer>
       </main>
     </div>
   );
