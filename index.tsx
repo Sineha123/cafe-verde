@@ -1,20 +1,9 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-/**
- * Initializes and mounts the React application.
- * Ensures the target 'root' container exists and uses the React 19 root API.
- */
-const container = document.getElementById('root');
-
-if (!container) {
-  throw new Error("Critical Error: Target container 'root' not found in index.html.");
-}
-
-const root = createRoot(container);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000
+  }
+})
